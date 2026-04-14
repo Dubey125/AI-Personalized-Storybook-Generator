@@ -1,0 +1,23 @@
+groups:
+  - name: storybook-api-alerts
+    rules:
+      - alert: StorybookApiDown
+        expr: up{job="storybook-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Storybook API is down"
+          description: "Prometheus cannot scrape the storybook API metrics endpoint."
+
+      - alert: StorybookHighErrorRate
+        expr: |
+          sum(rate(storybook_api_requests_total{status=~"5.."}[5m]))
+          /
+          clamp_min(sum(rate(storybook_api_requests_total[5m])), 0.001) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High API 5xx rate"
+          description: "The storybook API is returning >5% 5xx over 5m."

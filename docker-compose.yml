@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7-alpine
+    profiles: ["app"]
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    profiles: ["app"]
+    depends_on:
+      - redis
+    env_file:
+      - backend/.env
+    command: ["gunicorn", "-c", "backend/gunicorn_config.py", "backend.main:app"]
+    volumes:
+      - ./:/app
+    ports:
+      - "8000:8000"
+
+  worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    profiles: ["app"]
+    command: ["python", "-m", "backend.worker"]
+    depends_on:
+      - redis
+      - api
+    env_file:
+      - backend/.env
+    volumes:
+      - ./:/app
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    profiles: ["app"]
+    depends_on:
+      - api
+    ports:
+      - "3000:80"
+
+  prometheus:
+    image: prom/prometheus:v2.53.2
+    profiles: ["observability"]
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./observability/alerts.yml:/etc/prometheus/alerts.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - api

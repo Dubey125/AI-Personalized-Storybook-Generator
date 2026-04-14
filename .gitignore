@@ -1,0 +1,21 @@
+﻿node_modules/
+.venv311/
+
+# Sensitive & Large Files
+outputs/
+__pycache__/
+*.safetensors
+*.pt
+*.env
+frontend/build/
+frontend/node_modules/
+uploads/
+backend/error_logs.txt
+
+**/.venv*
+**/node_modules/
+**/build/
+
+backend/.venv311/
+frontend/node_modules/
+frontend/build/

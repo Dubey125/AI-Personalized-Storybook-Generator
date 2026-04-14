@@ -1,0 +1,38 @@
+services:
+  # ------------------------------------------------------------
+  # BACKEND SERVICE (Python FastAPI + AI Generative Models)
+  # ------------------------------------------------------------
+  - type: web
+    name: storybook-backend
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    # IMPORTANT: The free tier (512MB RAM) will crash running AI models!
+    # A minimum of "pro" (4GB+ RAM) or "standard" (2GB) is strictly required for Stable Diffusion.
+    plan: pro
+    region: ohio
+    healthCheckPath: /api/system-status
+    envVars:
+      - key: PORT
+        value: "8000"
+      # This allows the frontend to securely access the API once deployed
+      - key: ALLOWED_ORIGINS
+        value: "*" 
+      - key: METRICS_ENABLED
+        value: "false"
+
+  # ------------------------------------------------------------
+  # FRONTEND SERVICE (React UI via Nginx)
+  # ------------------------------------------------------------
+  - type: web
+    name: storybook-frontend
+    env: docker
+    dockerfilePath: frontend/Dockerfile
+    plan: free
+    region: ohio
+    envVars:
+      # Automatically links the frontend to the backend's generated URL on Render
+      - key: REACT_APP_API_BASE_URL
+        fromService:
+          type: web
+          name: storybook-backend
+          envVar: RENDER_EXTERNAL_URL
