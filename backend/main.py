@@ -685,8 +685,9 @@ async def generate_single_image(
     except HTTPException:
         raise
     except Exception as exc:
-        logger.exception("Quick image generation failed")
-        raise HTTPException(status_code=500, detail="Internal server error") from exc
+        import traceback
+        logger.error(f"Quick image generation failed: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
 @app.get("/api/health")
@@ -819,8 +820,10 @@ async def generate_preview(session_id: str, name: str, gender: str):
     except HTTPException:
         raise
     except Exception as e:
-        logger.exception("Preview generation failed")
-        raise HTTPException(status_code=500, detail="Internal server error") from e
+        import traceback
+        error_details = traceback.format_exc()
+        logger.error(f"Preview generation failed: {error_details}")
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @app.post("/api/train-character")
