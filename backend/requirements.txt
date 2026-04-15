@@ -10,7 +10,7 @@ torchvision>=0.17.0
 Pillow==10.1.0
 numpy==1.26.4
 insightface==0.7.3
-onnxruntime==1.16.1
+onnxruntime>=1.17.0
 reportlab==4.0.7
 redis==5.0.1
 rq==1.16.2
