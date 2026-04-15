@@ -796,12 +796,12 @@ async def generate_preview(session_id: str, name: str, gender: str):
         # Note: In a real run, this would inject the Face ID bindings.
         image = await run_in_threadpool(
             image_generator.generate_image,
-            prompt,
-            negative_prompt,
-            identity_seed,
-            adapter_disk_path,
-            settings.default_lora_adapter_scale,
-            user_image_path,
+            prompt=prompt,
+            negative_prompt=negative_prompt,
+            seed=identity_seed,
+            adapter_path=adapter_disk_path,
+            adapter_scale=settings.default_lora_adapter_scale,
+            reference_image_path=user_image_path,
         )
         
         # 4. Save the generated preview
@@ -819,9 +819,7 @@ async def generate_preview(session_id: str, name: str, gender: str):
     except HTTPException:
         raise
     except Exception as e:
-        import traceback
-        with open("C:/Users/yadav/Desktop/storybook/backend/error_logs.txt", "w") as f:
-            traceback.print_exc(file=f)
+        logger.exception("Preview generation failed")
         raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
