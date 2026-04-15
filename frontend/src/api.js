@@ -6,6 +6,10 @@ const API_AUTH_TOKEN = process.env.REACT_APP_API_AUTH_TOKEN || "";
 const client = axios.create({
   baseURL: API_BASE_URL,
   timeout: 600000, // Increased to 10 minutes to allow the heavy AI models to load
+  headers: {
+    "ngrok-skip-browser-warning": "69420",
+    "Bypass-Tunnel-Reminder": "true"
+  }
 });
 
 if (API_AUTH_TOKEN) {
