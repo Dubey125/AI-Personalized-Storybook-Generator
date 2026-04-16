@@ -1,7 +1,13 @@
 import axios from "axios";
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
-const API_AUTH_TOKEN = process.env.REACT_APP_API_AUTH_TOKEN || "";
+const runtimeConfig = window.__APP_CONFIG__ || {};
+const host = window.location.hostname;
+const isLocalhost = host === "localhost" || host === "127.0.0.1";
+const rawApiBaseUrl = isLocalhost
+  ? (runtimeConfig.API_BASE_URL || process.env.REACT_APP_API_BASE_URL || "http://localhost:8000")
+  : "";
+const API_BASE_URL = rawApiBaseUrl.replace(/\/+$/, "");
+const API_AUTH_TOKEN = (runtimeConfig.API_AUTH_TOKEN || process.env.REACT_APP_API_AUTH_TOKEN || "").trim();
 
 const client = axios.create({
   baseURL: API_BASE_URL,
